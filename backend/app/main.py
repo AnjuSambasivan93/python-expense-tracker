@@ -1,6 +1,20 @@
 from fastapi import FastAPI
 from .models import Transaction
 from .database import create_table, save_transaction, get_transactions
+
+from .analysis import (
+    calculate_total_income,
+    calculate_total_expenses,
+    calculate_savings
+)
+
+from .database import (
+    create_table,
+    save_transaction,
+    get_transactions,
+    get_monthly_transactions
+)
+
 app = FastAPI()
 create_table()
 
@@ -20,3 +34,27 @@ def add_transaction(transaction: Transaction):
 def list_transactions():
     transactions = get_transactions()
     return {"transactions": transactions}
+
+@app.get("/summary")
+def get_summary():
+    transactions = get_transactions()
+
+    income = calculate_total_income(transactions)
+    expenses = calculate_total_expenses(transactions)
+    savings = calculate_savings(transactions)
+
+    return {
+        "total_income": income,
+        "total_expenses": expenses,
+        "net_savings": savings
+    }
+
+
+@app.get("/transactions/monthly")
+def list_monthly_transactions(month: str):
+    transactions = get_monthly_transactions(month)
+
+    return {
+        "month": month,
+        "transactions": transactions
+    }

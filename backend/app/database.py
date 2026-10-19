@@ -45,3 +45,22 @@ def get_transactions():
 
     connection.close()
     return transactions
+
+
+
+def get_monthly_transactions(month):
+    connection = get_connection()
+    connection.row_factory = sqlite3.Row
+
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "SELECT * FROM transactions WHERE substr(date, 1, 7) = ?",
+        (month,)
+    )
+
+    transactions = [dict(row) for row in cursor.fetchall()]
+
+    connection.close()
+
+    return transactions
