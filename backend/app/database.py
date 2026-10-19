@@ -33,3 +33,15 @@ def save_transaction(transaction):
 
     connection.commit()
     connection.close()
+
+
+def get_transactions():
+    connection = get_connection()
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM transactions")
+    transactions = [dict(row) for row in cursor.fetchall()]
+
+    connection.close()
+    return transactions
