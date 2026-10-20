@@ -64,3 +64,13 @@ def get_monthly_transactions(month):
     connection.close()
 
     return transactions
+
+
+def clear_transactions():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("DELETE FROM transactions")
+
+    connection.commit()
+    connection.close()

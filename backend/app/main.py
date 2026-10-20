@@ -2,6 +2,10 @@ from fastapi import FastAPI
 from .models import Transaction
 from .database import create_table, save_transaction, get_transactions
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
+
 from .analysis import (
     calculate_total_income,
     calculate_total_expenses,
@@ -17,6 +21,14 @@ from .database import (
 
 app = FastAPI()
 create_table()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def home():
