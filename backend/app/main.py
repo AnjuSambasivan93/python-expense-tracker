@@ -58,3 +58,18 @@ def list_monthly_transactions(month: str):
         "month": month,
         "transactions": transactions
     }
+
+@app.get("/summary/monthly")
+def get_monthly_summary(month: str):
+    transactions = get_monthly_transactions(month)
+
+    income = calculate_total_income(transactions)
+    expenses = calculate_total_expenses(transactions)
+    savings = calculate_savings(transactions)
+
+    return {
+        "month": month,
+        "total_income": income,
+        "total_expenses": expenses,
+        "net_savings": savings
+    }
