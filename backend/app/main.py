@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from .models import Transaction
 from .database import create_table, save_transaction, get_transactions
 
@@ -16,7 +16,8 @@ from .database import (
     create_table,
     save_transaction,
     get_transactions,
-    get_monthly_transactions
+    get_monthly_transactions,
+    delete_transaction
 )
 
 app = FastAPI()
@@ -26,7 +27,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
     allow_credentials=False,
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -84,4 +85,18 @@ def get_monthly_summary(month: str):
         "total_income": income,
         "total_expenses": expenses,
         "net_savings": savings
+    }
+
+@app.delete("/transactions/{tranasction_id}")
+def remove_transaction(transaction_id: int):
+    deleted_rows = delete_transaction(transaction_id)
+
+    if deleted_rows == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Transaction not found"
+        )
+    return {
+        "message": "Transaction deleted successfully",
+        "transaction_id": transaction_id
     }
