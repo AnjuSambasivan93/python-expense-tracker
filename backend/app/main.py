@@ -87,7 +87,8 @@ def get_monthly_summary(month: str):
         "net_savings": savings
     }
 
-@app.delete("/transactions/{tranasction_id}")
+
+@app.delete("/transactions/{transaction_id}")
 def remove_transaction(transaction_id: int):
     deleted_rows = delete_transaction(transaction_id)
 
@@ -96,6 +97,7 @@ def remove_transaction(transaction_id: int):
             status_code=404,
             detail="Transaction not found"
         )
+
     return {
         "message": "Transaction deleted successfully",
         "transaction_id": transaction_id
