@@ -92,3 +92,14 @@ export async function getMonthlyTransactions(
   return data.transactions;
 }
 
+export async function getYearlySummary(year: number) {
+  const response = await fetch(
+    `${API_URL}/summary/yearly?year=${year}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch yearly summary");
+  }
+
+  return response.json();
+}

@@ -1,11 +1,13 @@
-def calculate_total_income(transactiobns):
+
+def calculate_total_income(transactions):
     total = 0
 
-    for transaction in transactiobns:
+    for transaction in transactions:
         if transaction["type"] == "Income":
             total += transaction["amount"]
 
     return total
+
 
 def calculate_total_expenses(transactions):
     total = 0
@@ -16,10 +18,9 @@ def calculate_total_expenses(transactions):
 
     return total
 
+
 def calculate_savings(transactions):
     income = calculate_total_income(transactions)
     expenses = calculate_total_expenses(transactions)
 
-    savings = income - expenses
-
-    return savings
+    return income - expenses

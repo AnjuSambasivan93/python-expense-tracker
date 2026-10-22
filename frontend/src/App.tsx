@@ -5,6 +5,7 @@ import "./App.css";
 import SummaryCards from "./components/SummaryCards";
 import TransactionForm from "./components/TransactionForm";
 import TransactionHistory from "./components/TransactionHistory";
+import YearlyPerformance from "./components/YearlyPerformance";
 
 import {
   getMonthlySummary,
@@ -19,14 +20,10 @@ import type {
   NewTransaction,
 } from "./types/finance";
 
-// Get the current month in YYYY-MM format
-function getCurrentMonth(): string {
+// Get current month
+function getCurrentMonth() {
   const today = new Date();
-
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-
-  return `${year}-${month}`;
+  return today.toISOString().slice(0, 7);
 }
 
 function App() {
@@ -34,25 +31,16 @@ function App() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [message, setMessage] = useState("");
 
-  // Selected month - defaults to current month
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [chartRefreshKey, setChartRefreshKey] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // Fetch monthly summary and transactions
-  const refreshData = async (month: string) => {
-    const [summaryData, transactionData] = await Promise.all([
-      getMonthlySummary(month),
-      getMonthlyTransactions(month),
-    ]);
-
-    setSummary(summaryData);
-    setTransactions(transactionData);
-  };
-
-  // Reload data whenever the selected month changes
+  // Load monthly data
   useEffect(() => {
     let cancelled = false;
 
-    const loadMonthlyData = async () => {
+    async function loadData() {
       try {
         const [summaryData, transactionData] = await Promise.all([
           getMonthlySummary(selectedMonth),
@@ -62,86 +50,101 @@ function App() {
         if (!cancelled) {
           setSummary(summaryData);
           setTransactions(transactionData);
-          setMessage("");
         }
       } catch (error) {
-        console.error("Error loading monthly data:", error);
+        console.error(error);
 
         if (!cancelled) {
-          setMessage("Unable to load monthly financial data.");
+          setMessage("Unable to load financial data.");
         }
       }
-    };
+    }
 
-    loadMonthlyData();
+    loadData();
 
     return () => {
       cancelled = true;
     };
-  }, [selectedMonth]);
+  }, [selectedMonth, refreshKey]);
 
-  // Save a new transaction
+  // Save transaction
   const handleSave = async (transaction: NewTransaction) => {
     try {
       await addTransaction(transaction);
 
-      await refreshData(selectedMonth);
+      setRefreshKey((previous) => previous + 1);
+      setChartRefreshKey((previous) => previous + 1);
 
       setMessage("Transaction saved successfully!");
     } catch (error) {
-      console.error("Error saving transaction:", error);
-      setMessage("Failed to save or refresh transaction.");
+      console.error(error);
+      setMessage("Failed to save transaction.");
       throw error;
     }
   };
 
-  // Delete an existing transaction
+  // Delete transaction
   const handleDelete = async (id: number) => {
     try {
       await deleteTransaction(id);
 
-      await refreshData(selectedMonth);
+      setRefreshKey((previous) => previous + 1);
+      setChartRefreshKey((previous) => previous + 1);
 
       setMessage("Transaction deleted successfully!");
     } catch (error) {
-      console.error("Error deleting transaction:", error);
-      setMessage("Failed to delete or refresh transaction.");
+      console.error(error);
+      setMessage("Failed to delete transaction.");
     }
   };
 
   return (
     <div className="dashboard">
       <h1>Personal Finance Tracker</h1>
-
       <p>Manage your income, expenses, and savings.</p>
 
-      {/* Month Selector */}
       <div className="month-selector">
         <label htmlFor="selectedMonth">Select Month</label>
-
         <input
           type="month"
           id="selectedMonth"
           value={selectedMonth}
-          onChange={(event) => {
-            setSelectedMonth(event.target.value);
+          onChange={(e) => setSelectedMonth(e.target.value)}
+        />
+      </div>
+
+      <SummaryCards summary={summary} />
+
+      <TransactionForm onSave={handleSave} />
+
+      {message && <p role="status">{message}</p>}
+
+      <TransactionHistory
+        transactions={transactions}
+        onDelete={handleDelete}
+      />
+
+      <div className="year-selector">
+        <label htmlFor="selectedYear">Select Year</label>
+        <input
+          type="number"
+          id="selectedYear"
+          min="2000"
+          max="2100"
+          value={selectedYear}
+          onChange={(e) => {
+            const year = Number(e.target.value);
+
+            if (year >= 2000 && year <= 2100) {
+              setSelectedYear(year);
+            }
           }}
         />
       </div>
 
-      {/* Monthly Financial Summary */}
-      <SummaryCards summary={summary} />
-
-      {/* Add New Transaction */}
-      <TransactionForm onSave={handleSave} />
-
-      {/* Success or Error Message */}
-      {message && <p role="status">{message}</p>}
-
-      {/* Monthly Transaction History */}
-      <TransactionHistory
-        transactions={transactions}
-        onDelete={handleDelete}
+      <YearlyPerformance
+        year={selectedYear}
+        refreshKey={chartRefreshKey}
       />
     </div>
   );

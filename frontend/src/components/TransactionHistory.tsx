@@ -10,14 +10,11 @@ function TransactionHistory({
   transactions,
   onDelete,
 }: TransactionHistoryProps) {
-  const handleDelete = async (id: number) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this transaction?"
-    );
 
-    if (!confirmed) return;
-
-    await onDelete(id);
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
+      void onDelete(id);
+    }
   };
 
   return (
@@ -44,9 +41,7 @@ function TransactionHistory({
                 <td>{transaction.type}</td>
                 <td>{transaction.category}</td>
                 <td>{transaction.description}</td>
-                <td>
-                  NZ${transaction.amount.toLocaleString()}
-                </td>
+                <td>NZ${transaction.amount.toFixed(2)}</td>
                 <td>
                   <button
                     type="button"

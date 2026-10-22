@@ -1,6 +1,5 @@
 
-import { useState } from "react";
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import type { NewTransaction } from "../types/finance";
 
 interface TransactionFormProps {
@@ -73,9 +72,7 @@ function TransactionForm({ onSave }: TransactionFormProps) {
             id="type"
             name="type"
             value={transactionType}
-            onChange={(event) =>
-              setTransactionType(event.target.value)
-            }
+            onChange={(e) => setTransactionType(e.target.value)}
             required
           >
             <option value="">Select transaction type</option>

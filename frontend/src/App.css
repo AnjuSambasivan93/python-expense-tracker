@@ -241,3 +241,83 @@
     align-items: flex-start;
   }
 }
+
+
+.yearly-performance {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.yearly-performance h2 {
+  margin-top: 0;
+}
+
+.year-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 12px;
+}
+
+.year-selector input {
+  width: 110px;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.yearly-chart-scroll,
+.yearly-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.yearly-chart-scroll svg {
+  display: block;
+  min-width: 600px;
+  width: 100%;
+  height: auto;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 12px 0 24px;
+  font-size: 14px;
+}
+
+.yearly-insights {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+}
+
+.yearly-insights h3 {
+  margin-top: 16px;
+}
+
+.yearly-table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.yearly-table-scroll th,
+.yearly-table-scroll td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .yearly-performance {
+    padding: 14px;
+  }
+
+  .year-selector {
+    flex-wrap: wrap;
+  }
+}
+
