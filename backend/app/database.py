@@ -66,17 +66,6 @@ def get_monthly_transactions(month):
     return transactions
 
 
-def clear_transactions():
-    connection = get_connection()
-    cursor = connection.cursor()
-
-    cursor.execute("DELETE FROM transactions")
-
-    connection.commit()
-    connection.close()
-
-
-
 
 def delete_transaction(transaction_id):
     connection = get_connection()
@@ -93,3 +82,19 @@ def delete_transaction(transaction_id):
     connection.close()
 
     return deleted_rows
+
+
+def get_yearly_transactions(year):
+    connection = get_connection()
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "SELECT * FROM transactions WHERE substr(date, 1, 4) = ?",
+        (str(year),)
+    )
+
+    transactions = [dict(row) for row in cursor.fetchall()]
+
+    connection.close()
+    return transactions
