@@ -9,6 +9,7 @@ from .database import (
     save_transaction,
     get_transactions,
     get_monthly_transactions,
+    get_yearly_transactions,
     delete_transaction
 )
 
